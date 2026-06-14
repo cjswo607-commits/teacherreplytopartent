@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학부모 민원 응대 스타일 진단검사</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --teal-dark: #2D7D7D;
+    --teal: #3A9E9E;
+    --teal-light: #A8D8D8;
+    --teal-xlight: #E6F4F4;
+    --sage: #7BAE8C;
+    --sage-light: #D4EAD9;
+    --warm: #F5EDE0;
+    --warm-mid: #E8D5C0;
+    --text-dark: #2B3340;
+    --text-mid: #5A6473;
+    --text-light: #8A939E;
+    --white: #FFFFFF;
+    --shadow-sm: 0 2px 8px rgba(45,125,125,0.08);
+    --shadow-md: 0 6px 24px rgba(45,125,125,0.12);
+    --shadow-lg: 0 12px 40px rgba(45,125,125,0.16);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(150deg, #EAF6F6 0%, #F5EDE0 60%, #E6F4F4 100%);
+    min-height: 100vh;
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+
+  /* ─── SCREEN SYSTEM ─── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px; }
+
+  /* ─── LANDING ─── */
+  #screen-landing {
+    background: linear-gradient(160deg, var(--teal-xlight) 0%, var(--warm) 100%);
+  }
+
+  .landing-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 52px 44px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .landing-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--teal), var(--sage));
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 28px;
+    font-size: 32px;
+  }
+
+  .landing-eyebrow {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 12px;
+  }
+
+  .landing-title {
+    font-size: 26px; font-weight: 700;
+    color: var(--text-dark); line-height: 1.35;
+    margin-bottom: 16px;
+  }
+
+  .landing-desc {
+    font-size: 14.5px; color: var(--text-mid);
+    line-height: 1.75; margin-bottom: 32px;
+  }
+
+  .info-chips {
+    display: flex; gap: 10px;
+    justify-content: center; flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .chip {
+    background: var(--teal-xlight); color: var(--teal-dark);
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12.5px; font-weight: 500;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+    color: white; border: none; border-radius: var(--radius-sm);
+    padding: 16px 40px; font-size: 16px; font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer; width: 100%;
+    box-shadow: 0 4px 16px rgba(58,158,158,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(58,158,158,0.40); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: var(--teal-xlight); color: var(--teal-dark);
+    border: none; border-radius: var(--radius-sm);
+    padding: 14px 28px; font-size: 14px; font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-secondary:hover { background: var(--teal-light); }
+
+  /* ─── QUESTION SCREEN ─── */
+  #screen-question {
+    background: linear-gradient(150deg, #EAF6F6 0%, var(--warm) 100%);
+    padding-top: 0;
+  }
+
+  .q-header {
+    width: 100%; max-width: 680px;
+    padding: 20px 16px 0;
+    position: sticky; top: 0; z-index: 10;
+    background: transparent;
+  }
+
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.7);
+    border-radius: 24px; padding: 16px 20px;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(6px);
+  }
+
+  .progress-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-label { font-size: 12px; font-weight: 700; color: var(--teal); letter-spacing: 0.05em; }
+  .progress-frac { font-size: 13px; font-weight: 700; color: var(--text-mid); }
+
+  .progress-track {
+    height: 8px; background: var(--teal-xlight);
+    border-radius: 4px; overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--sage));
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .q-body {
+    width: 100%; max-width: 680px;
+    padding: 24px 16px 48px;
+    flex: 1;
+  }
+
+  .q-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 32px 28px;
+    box-shadow: var(--shadow-md);
+    animation: fadeUp 0.3s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--teal-xlight); color: var(--teal-dark);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 4px 10px; border-radius: 6px; margin-bottom: 16px;
+  }
+
+  .q-situation {
+    background: linear-gradient(135deg, var(--warm), #EDE0D4);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 16px 18px; margin-bottom: 28px;
+    font-size: 14px; line-height: 1.8; color: var(--text-dark);
+  }
+
+  .q-situation strong { font-size: 11px; font-weight: 700; color: var(--teal); display: block; margin-bottom: 6px; letter-spacing: 0.06em; }
+
+  .q-choices { display: flex; flex-direction: column; gap: 10px; }
+
+  .choice-btn {
+    background: var(--white); border: 2px solid #E8ECEF;
+    border-radius: var(--radius-sm); padding: 16px 18px;
+    text-align: left; cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px; line-height: 1.65; color: var(--text-dark);
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+
+  .choice-btn:hover {
+    border-color: var(--teal-light); background: var(--teal-xlight);
+    transform: translateX(3px);
+  }
+
+  .choice-btn.selected {
+    border-color: var(--teal); background: var(--teal-xlight);
+  }
+
+  .choice-letter {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    background: var(--teal-xlight); color: var(--teal-dark);
+    border-radius: 6px; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+
+  .choice-btn.selected .choice-letter {
+    background: var(--teal); color: white;
+  }
+
+  /* ─── LOADING ─── */
+  #screen-loading {
+    background: linear-gradient(160deg, var(--teal-xlight), var(--warm));
+  }
+
+  .loading-inner { text-align: center; }
+
+  .spinner-ring {
+    width: 72px; height: 72px; margin: 0 auto 28px;
+    border: 4px solid var(--teal-light);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-title { font-size: 20px; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; }
+  .loading-sub { font-size: 14px; color: var(--text-mid); }
+
+  .loading-dots span {
+    display: inline-block; width: 8px; height: 8px;
+    background: var(--teal); border-radius: 50%; margin: 0 3px;
+    animation: bounce 1.2s infinite;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+
+  /* ─── RESULT ─── */
+  #screen-result {
+    background: linear-gradient(150deg, #EAF6F6 0%, var(--warm) 100%);
+    justify-content: flex-start; padding-top: 0;
+  }
+
+  .result-wrap {
+    width: 100%; max-width: 680px;
+    padding: 28px 16px 60px;
+  }
+
+  .result-hero {
+    background: linear-gradient(135deg, var(--teal-dark), #1E6060);
+    border-radius: 20px; padding: 36px 30px;
+    color: white; margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+
+  .result-hero::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .result-hero::after {
+    content: '';
+    position: absolute; bottom: -30px; right: 40px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+
+  .result-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--teal-light); margin-bottom: 10px;
+  }
+
+  .result-type-name {
+    font-size: 28px; font-weight: 700;
+    line-height: 1.3; margin-bottom: 12px;
+  }
+
+  .result-summary {
+    font-size: 14px; color: rgba(255,255,255,0.85);
+    line-height: 1.75;
+  }
+
+  .result-section {
+    background: var(--white);
+    border-radius: 16px; padding: 24px 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .section-title {
+    font-size: 13px; font-weight: 700;
+    color: var(--teal); letter-spacing: 0.06em;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 7px;
+  }
+
+  .chart-wrap { position: relative; width: 100%; max-width: 300px; margin: 0 auto; }
+
+  .score-bars { display: flex; flex-direction: column; gap: 12px; }
+
+  .score-row {
+    display: grid; grid-template-columns: 80px 1fr 44px;
+    align-items: center; gap: 12px;
+  }
+
+  .score-dim { font-size: 12.5px; font-weight: 600; color: var(--text-mid); }
+  .score-track { height: 10px; background: var(--teal-xlight); border-radius: 5px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 5px; transition: width 1s cubic-bezier(0.34,1.2,0.64,1); }
+  .score-pct { font-size: 12px; font-weight: 700; color: var(--teal-dark); text-align: right; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
+  .tag {
+    padding: 5px 12px; border-radius: 16px;
+    font-size: 12px; font-weight: 600;
+  }
+
+  .tag-strength { background: var(--sage-light); color: #2D6B40; }
+  .tag-growth   { background: #FFF0E6; color: #A0520F; }
+
+  .detail-text { font-size: 14px; color: var(--text-mid); line-height: 1.8; }
+
+  .guide-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .guide-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--teal-xlight); border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .guide-num {
+    flex-shrink: 0; width: 24px; height: 24px;
+    background: var(--teal); color: white;
+    border-radius: 6px; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+
+  .guide-text { font-size: 13.5px; color: var(--text-dark); line-height: 1.7; }
+
+  .action-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-top: 24px;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 480px) {
+    .landing-card { padding: 36px 24px; }
+    .landing-title { font-size: 22px; }
+    .q-card { padding: 24px 18px; }
+    .result-type-name { font-size: 22px; }
+    .result-hero { padding: 28px 22px; }
+    .action-row { grid-template-columns: 1fr; }
+    .score-row { grid-template-columns: 70px 1fr 38px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LANDING ══════════════ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-card">
+    <div class="landing-icon">📋</div>
+    <div class="landing-eyebrow">교사 전문성 진단도구</div>
+    <h1 class="landing-title">학부모 민원 응대<br>스타일 진단검사</h1>
+    <p class="landing-desc">
+      20가지 실제 민원 상황에서 나라면 어떻게 대응할지 선택해 보세요.<br>
+      선생님만의 응대 스타일을 분석하고, 더 효과적인 대응 방향을 안내해 드립니다.
+    </p>
+    <div class="info-chips">
+      <span class="chip">📝 20문항</span>
+      <span class="chip">⏱ 약 5분</span>
+      <span class="chip">🔒 로그인 불필요</span>
+    </div>
+    <button class="btn-primary" onclick="startTest()">진단 시작하기 →</button>
+  </div>
+</div>
+
+<!-- ══════════════ QUESTION ══════════════ -->
+<div id="screen-question" class="screen">
+  <div class="q-header">
+    <div class="progress-bar-wrap">
+      <div class="progress-meta">
+        <span class="progress-label">진행 중</span>
+        <span class="progress-frac" id="prog-frac">1 / 20</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width: 5%"></div>
+      </div>
+    </div>
+  </div>
+  <div class="q-body">
+    <div class="q-card" id="q-card">
+      <!-- injected dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ LOADING ══════════════ -->
+<div id="screen-loading" class="screen">
+  <div class="loading-inner">
+    <div class="spinner-ring"></div>
+    <div class="loading-title">결과를 분석하는 중입니다</div>
+    <p class="loading-sub">선생님의 응대 스타일을 파악하고 있어요</p>
+    <div class="loading-dots" style="margin-top: 20px;">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ RESULT ══════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-wrap" id="result-wrap">
+    <!-- injected dynamically -->
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    id: 1, topic: "생활지도",
+    situation: "수업 중 지속적으로 떠드는 학생을 규정에 따라 뒤로 나가 서 있게 하자, 학부모가 \"우리 아이만 표적으로 삼아 혼낸 것 아니냐\"며 항의 전화를 해왔다.",
+    choices: [
+      { letter: "A", text: "\"속상하셨겠어요. 아이가 상황을 오해하고 상처를 받은 것 같아 저도 안타깝네요.\"", dim: "E" },
+      { letter: "B", text: "\"학교 생활 규정에 따라 수업 방해 행동에 대해 모든 학생에게 동일하게 적용한 조치입니다.\"", dim: "P" },
+      { letter: "C", text: "\"교사로서 교실의 면학 분위기를 조성하기 위한 저의 정당한 교육적 판단이었습니다.\"", dim: "A" },
+      { letter: "D", text: "\"앞으로 아이가 수업에 집중할 수 있도록 자리 배치를 바꾸거나 추가적인 상담을 진행하겠습니다.\"", dim: "S" }
+    ]
+  },
+  {
+    id: 2, topic: "학생 갈등",
+    situation: "두 학생이 다투었는데, 한 학부모가 전화를 걸어와 당장 상대방 아이를 불러내어 사과를 받아내라고 요구한다.",
+    choices: [
+      { letter: "A", text: "\"제가 지금 다른 업무 중이라 통화가 길어지기 어려우니, 나중에 다시 연락드리겠습니다.\"", dim: "V" },
+      { letter: "B", text: "\"많이 놀라셨죠. 우리 아이가 억울하게 상처받았을까 봐 저도 걱정이 됩니다.\"", dim: "E" },
+      { letter: "C", text: "\"양쪽 학생의 이야기를 모두 듣고 객관적인 사실관계를 명확히 파악하는 것이 우선입니다.\"", dim: "P" },
+      { letter: "D", text: "\"내일 두 학생을 불러 화해의 자리를 마련하고, 결과가 어떻게 되었는지 안내해 드리겠습니다.\"", dim: "S" }
+    ]
+  },
+  {
+    id: 3, topic: "친구관계",
+    situation: "학부모가 자신의 아이가 친한 친구와 같은 모둠이 되지 않아 학교 가기를 싫어한다며, 모둠을 변경해 달라고 요구한다.",
+    choices: [
+      { letter: "A", text: "\"모둠 구성은 교사의 고유 권한이며, 전체적인 학급 분위기를 고려해 심사숙고하여 결정한 것입니다.\"", dim: "A" },
+      { letter: "B", text: "\"이미 공지된 학급 운영 기준에 따라 무작위로 정해진 것이라 임의로 변경할 수 없습니다.\"", dim: "P" },
+      { letter: "C", text: "\"이번 모둠은 그대로 진행하되, 다음번 모둠 구성이나 활동 때 아이의 의견을 반영해 보겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"친한 친구와 떨어져서 아이가 아쉬워하는 마음, 어머니께서도 신경 쓰이시는 그 마음 충분히 이해합니다.\"", dim: "E" }
+    ]
+  },
+  {
+    id: 4, topic: "성적 및 평가",
+    situation: "학부모가 수행평가 결과에 대해 \"우리가 집에서 얼마나 연습했는데 점수가 이것밖에 안 되느냐\"며 불만을 제기한다.",
+    choices: [
+      { letter: "A", text: "\"사전에 안내해 드린 평가 루브릭과 채점 기준표에 의거하여 정확하게 채점된 결과입니다.\"", dim: "P" },
+      { letter: "B", text: "\"교과 담당 교사로서 학생의 성취도를 다각도로 관찰하고 내린 전문적이고 객관적인 평가입니다.\"", dim: "A" },
+      { letter: "C", text: "\"지금 당장 답안지를 확인하여 말씀드리기는 어려우니, 나중에 성적 이의 신청 기간에 다시 말씀해 주시겠어요?\"", dim: "V" },
+      { letter: "D", text: "\"예상보다 점수가 낮게 나와서 아이도 어머님도 많이 실망하시고 속상하셨을 그 마음 충분히 이해가 갑니다.\"", dim: "E" }
+    ]
+  },
+  {
+    id: 5, topic: "안전사고",
+    situation: "쉬는 시간에 아이가 넘어져 무릎이 까졌다. 학부모가 \"선생님은 애들 안 보고 뭐 하셨냐\"며 따져 묻는다.",
+    choices: [
+      { letter: "A", text: "\"아이가 다쳐서 정말 많이 놀라셨고 속상하시죠. 제 마음도 너무 무겁고 죄송스럽습니다.\"", dim: "E" },
+      { letter: "B", text: "\"우선 보건실에서 소독과 응급처치를 마쳤습니다. 하교 후 병원 진료가 필요할지 경과를 함께 지켜보시죠.\"", dim: "S" },
+      { letter: "C", text: "\"쉬는 시간에 모든 학생을 1:1로 밀착 통제하는 것은 물리적으로 한계가 있음을 양해 부탁드립니다.\"", dim: "A" },
+      { letter: "D", text: "\"제가 다른 학생을 지도하던 중에 발생한 일이라, 그 상황을 정확히 보지는 못했습니다.\"", dim: "V" }
+    ]
+  },
+  {
+    id: 6, topic: "체험학습",
+    situation: "학부모가 개인 사정으로 아이를 체험학습에 안 보내겠다며, 담임교사가 학교에 남아 단독으로 대체 학습을 지도해 달라고 요구한다.",
+    choices: [
+      { letter: "A", text: "\"체험학습 불참 학생은 규정에 따라 학교에 마련된 통합 교실에서 자율학습을 진행하게 되어 있습니다.\"", dim: "P" },
+      { letter: "B", text: "\"그 부분은 제가 결정하기 어려우니 학년부장님이나 교무실에 먼저 문의를 해보셔야 할 것 같습니다.\"", dim: "V" },
+      { letter: "C", text: "\"제가 인솔을 가야 하므로 직접 지도는 어렵지만, 스스로 할 수 있는 과제와 독서 목록을 준비해 주겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"아이가 체험학습에 참여하지 못해 못내 아쉬울 텐데, 혼자 남겨지는 것에 대한 어머님의 걱정 충분히 이해합니다.\"", dim: "E" }
+    ]
+  },
+  {
+    id: 7, topic: "출결",
+    situation: "학부모가 사설 학원 캠프 참석을 위해 교외체험학습을 신청하겠다며, 그냥 눈감고 승인해 달라고 부탁한다.",
+    choices: [
+      { letter: "A", text: "\"사교육 참여는 체험학습 인정 사유가 될 수 없으며, 교사로서 규정을 어기면서까지 승인할 수는 없습니다.\"", dim: "A" },
+      { letter: "B", text: "\"교육청 지침 및 학교 학업성적관리규정에 위배되는 사유이므로 무단결석으로 처리될 수밖에 없습니다.\"", dim: "P" },
+      { letter: "C", text: "\"학원 일정 때문에 어쩔 수 없이 신청하셔야 하는 어머님의 난처한 상황은 저도 충분히 공감이 갑니다.\"", dim: "E" },
+      { letter: "D", text: "\"결재권자가 교장 선생님이시라, 제가 이 서류를 올리면 반려될 확률이 높아서 받기가 어렵습니다.\"", dim: "V" }
+    ]
+  },
+  {
+    id: 8, topic: "학급 운영",
+    situation: "학급 내 칭찬 스티커 제도로 인해 아이가 스트레스를 받는다며 제도를 폐지하라는 학부모의 민원이 들어왔다.",
+    choices: [
+      { letter: "A", text: "\"경쟁보다는 협력에 초점을 맞출 수 있도록, 개인 보상 외에 학급 전체 보상 비율을 늘리는 방안을 도입해 보겠습니다.\"", dim: "S" },
+      { letter: "B", text: "\"이 보상 제도는 학생들의 동기부여를 위해 제 오랜 교직 경험과 교육적 소신을 바탕으로 설계한 것입니다.\"", dim: "A" },
+      { letter: "C", text: "\"아이가 칭찬 스티커를 못 받아서 시무룩해했다니 저도 참 속상하네요. 어머님께서도 걱정이 많으셨겠습니다.\"", dim: "E" },
+      { letter: "D", text: "\"학년 초 학부모 총회에서 이미 충분히 안내해 드렸고, 다수의 학부모님이 동의하신 학급 운영 규칙입니다.\"", dim: "P" }
+    ]
+  },
+  {
+    id: 9, topic: "반복 민원",
+    situation: "학부모가 매일같이 \"물 마시게 해달라\", \"밥 다 먹었는지 확인해 달라\"는 등 사소한 요구를 메시지로 보낸다.",
+    choices: [
+      { letter: "A", text: "(바쁠 때는 메시지를 읽고도 바로 답장하지 않고, 나중에 한꺼번에 짧게 단답형으로만 대답한다.)", dim: "V" },
+      { letter: "B", text: "\"어머님, 너무 잦은 연락은 저의 수업과 다른 학생들 지도 등 교원의 정상적인 교육활동에 지장을 줄 수 있습니다.\"", dim: "A" },
+      { letter: "C", text: "\"매일 개별 연락을 드리기보다는, 매주 금요일 알림장을 통해 아이의 일주일간 학교생활을 요약해서 알려드리겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"학교운영위원회에서 제정된 교권보호 규정에 따라, 근무 시간 외이거나 단순 확인성 개인 연락은 자제해 주셔야 합니다.\"", dim: "P" }
+    ]
+  },
+  {
+    id: 10, topic: "교사 책임 추궁",
+    situation: "아이가 값비싼 외투를 잃어버렸다며, 교사가 교실 관리를 제대로 안 해서 발생한 일이니 책임지라고 항의한다.",
+    choices: [
+      { letter: "A", text: "\"비싼 옷을 잃어버려서 어머니께서 정말 화가 나시고 속상하실 만합니다. 아이도 많이 시무룩하겠네요.\"", dim: "E" },
+      { letter: "B", text: "\"학교생활규정 및 가정통신문으로 안내해 드린 바와 같이, 고가의 개인 물품은 학교에 가져오지 않는 것이 원칙입니다.\"", dim: "P" },
+      { letter: "C", text: "\"개인 소지품 관리의 1차적인 책임은 학생 본인에게 있으며, 교사가 모든 물건을 책임지고 관리할 수는 없습니다.\"", dim: "A" },
+      { letter: "D", text: "\"내일 아침 조회 시간에 반 아이들에게 분실물을 수배하고, 분실물 센터 확인 등 찾을 수 있는 방법을 다방면으로 찾아보겠습니다.\"", dim: "S" }
+    ]
+  },
+  {
+    id: 11, topic: "야간 연락",
+    situation: "밤 10시가 넘은 시간, 긴급하지 않은 숙제 관련 질문으로 교사의 개인 휴대전화로 연락이 왔다.",
+    choices: [
+      { letter: "A", text: "(전화를 받지 않고, 다음 날 아침 출근한 후 학교 전화로 다시 연락한다.)", dim: "V" },
+      { letter: "B", text: "\"어머님, 지금은 저의 사생활이 보장되어야 하는 퇴근 시간 이후이므로 업무 연락은 내일 일과 중에 부탁드립니다.\"", dim: "P" },
+      { letter: "C", text: "\"숙제 관련 문의군요. 지금 통화는 길게 어려우니, 내일 아침 아이가 등교하면 제가 직접 아이에게 다시 설명해 주겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"밤늦게까지 아이 숙제 챙겨주시느라 고생이 많으십니다. 늦은 시간까지 애쓰시는 마음 저도 잘 압니다.\"", dim: "E" }
+    ]
+  },
+  {
+    id: 12, topic: "공개 비난",
+    situation: "학부모가 학급 밴드(SNS)에 교사의 지도 방식을 우회적으로 비난하는 뉘앙스의 댓글을 공개적으로 달았다.",
+    choices: [
+      { letter: "A", text: "\"공개적인 공간에서 교사의 명예를 훼손할 수 있는 글을 작성하는 것은 교권 침해 소지가 있음을 정중히 경고합니다.\"", dim: "A" },
+      { letter: "B", text: "(온라인상에서 굳이 논쟁을 만들고 싶지 않으므로, 해당 댓글에 아무런 반응을 하지 않고 넘어간다.)", dim: "V" },
+      { letter: "C", text: "\"글을 삭제해 주시길 부탁드리며, 저의 지도 방식에 대해 궁금한 점이 있으시다면 내일 1:1 면담 시간을 마련해 설명해 드리겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"제가 올린 글로 인해 어머님께서 오해하시고 마음 상하신 부분이 있다면 저 역시 매우 유감스럽게 생각합니다.\"", dim: "E" }
+    ]
+  },
+  {
+    id: 13, topic: "학교 규정",
+    situation: "교칙상 스마트폰 소지가 금지되어 있음에도 불구하고, 학부모가 불안하다며 스마트폰을 소지하게 해달라고 억지를 부린다.",
+    choices: [
+      { letter: "A", text: "\"학교의 모든 구성원이 합의한 교칙 제00조에 따라 교내 스마트폰 소지는 예외 없이 엄격하게 금지되어 있습니다.\"", dim: "P" },
+      { letter: "B", text: "\"교칙을 준수하는 것도 중요한 교육입니다. 교사로서 특정 학생에게만 특혜를 주는 것은 비교육적이라 판단합니다.\"", dim: "A" },
+      { letter: "C", text: "\"스마트폰은 아침에 제가 수거하여 안전하게 보관하고 있다가, 하교할 때 바로 돌려주어 연락에 차질이 없도록 조치하겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"이 부분은 제 권한 밖의 일이라서요, 정 원하신다면 교장 선생님이나 학생부장님께 직접 건의해 보셔야 할 것 같습니다.\"", dim: "V" }
+    ]
+  },
+  {
+    id: 14, topic: "학교폭력 의심",
+    situation: "뚜렷한 증거나 외상은 없으나, 아이가 학교 가기 싫어한다는 이유만으로 학부모가 교내 괴롭힘을 강하게 의심하며 조사를 요구한다.",
+    choices: [
+      { letter: "A", text: "\"아이가 학교 가기 싫어한다니 부모님 입장에서 얼마나 불안하실지 그 마음 깊이 공감합니다.\"", dim: "E" },
+      { letter: "B", text: "\"학교폭력이 의심되신다면, 매뉴얼에 따라 우선 학교폭력 전담 기구에 정식으로 사안 접수를 진행하셔야 합니다.\"", dim: "P" },
+      { letter: "C", text: "\"제가 직접 목격하거나 확증이 있는 상황이 아니라서 섣불리 개입하기 조심스러우니, 가정에서 며칠 더 지켜봐 주시겠습니까?\"", dim: "V" },
+      { letter: "D", text: "\"담임교사인 제가 그동안 밀착해서 관찰한 결과로는 교실 내에서 폭력이라 부를 만한 특이 동향은 전혀 없었습니다.\"", dim: "A" }
+    ]
+  },
+  {
+    id: 15, topic: "SNS 관련 문제",
+    situation: "주말에 인스타그램 댓글로 아이들끼리 욕설을 주고받고 싸웠다. 월요일 아침 학부모가 상대 아이를 엄벌해 달라고 요구한다.",
+    choices: [
+      { letter: "A", text: "\"학교 밖 일과 시간 이후에 발생한 사적인 SNS 문제까지 교사가 일일이 개입하여 지도하고 책임지는 것은 무리입니다.\"", dim: "A" },
+      { letter: "B", text: "\"이건 주말에 가정에서 일어난 일이니, 양쪽 부모님들께서 직접 연락하셔서 대화로 푸시는 것이 가장 빠를 것 같습니다.\"", dim: "V" },
+      { letter: "C", text: "\"내일 두 학생을 불러서 어떤 오해가 있었는지 경위를 파악하고, SNS 예절 및 정보통신윤리 교육을 실시하겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"사이버 폭력에 해당할 여지가 있으므로, 이는 단순 훈육이 아니라 학교폭력 사안 처리 절차에 따라 조사해야 할 사안입니다.\"", dim: "P" }
+    ]
+  },
+  {
+    id: 16, topic: "학부모 간 갈등",
+    situation: "학부모 단톡방에서 두 학부모가 다투다가, 각각 담임교사에게 개인 연락을 하여 자신의 편을 들어달라고 호소한다.",
+    choices: [
+      { letter: "A", text: "\"교사는 중립을 지켜야 할 의무가 있습니다. 사적인 감정싸움에 교사가 어느 한쪽의 편을 드는 것은 규정상 불가합니다.\"", dim: "P" },
+      { letter: "B", text: "\"어머님들 사이의 개인적인 의견 충돌이신 것 같아, 담임교사인 제가 중간에 나서서 왈가왈부할 사안은 아닌 것 같습니다.\"", dim: "V" },
+      { letter: "C", text: "\"양쪽 어머님 모두 각자의 입장에서 얼마나 답답하고 속상하실지 그 심정이 충분히 이해가 가서 제 마음도 안타깝습니다.\"", dim: "E" },
+      { letter: "D", text: "\"단톡방에서의 논쟁은 멈춰주시길 당부드리며, 필요하다면 세 명이 학교에서 만나 객관적으로 상황을 조율할 수 있는 자리를 마련하겠습니다.\"", dim: "S" }
+    ]
+  },
+  {
+    id: 17, topic: "특수교육 요구",
+    situation: "진단은 받지 않았으나 산만한 아이의 학부모가, 수업 시간 내내 교사가 자기 아이 옆에만 붙어서 1:1로 지도해 달라고 요구한다.",
+    choices: [
+      { letter: "A", text: "\"모든 학생의 학습권을 동등하게 보장해야 하는 교사로서 특정 학생에게만 전담 보조교사처럼 매달려 있을 수는 없습니다.\"", dim: "A" },
+      { letter: "B", text: "\"제가 혼자서 케어하기는 버거우니, 어머님께서 교실에 오셔서 보조 교사 역할을 해주시거나 특수학급 배정을 알아보셔야겠습니다.\"", dim: "V" },
+      { letter: "C", text: "\"수업 중 제가 계속 옆에 있기는 어렵지만, 아이가 집중하기 쉬운 앞자리로 배정하고 수시로 진행 상황을 체크해 주겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"아이가 수업을 잘 따라가지 못할까 봐 매일 노심초사하시는 어머님의 그 깊은 걱정과 애타는 마음 십분 헤아립니다.\"", dim: "E" }
+    ]
+  },
+  {
+    id: 18, topic: "방과후 민원",
+    situation: "방과후 강사가 불친절하다며 담임교사에게 당장 그 강사를 해고해 달라고 강력히 항의한다.",
+    choices: [
+      { letter: "A", text: "\"방과후 강사 채용 및 해고는 학교운영위원회의 심의를 거쳐야 하는 사안이므로, 담임교사 개인에게는 그럴 권한이 없습니다.\"", dim: "P" },
+      { letter: "B", text: "\"방과후학교 관련 민원은 담당 부장님이나 실무사님께서 처리하시니, 그쪽으로 다시 전화를 걸어보시겠어요?\"", dim: "V" },
+      { letter: "C", text: "\"아이가 방과후 수업에서 불친절함을 느끼고 왔다니 어머님께서 많이 언짢으시고 화가 나셨을 그 마음 충분히 공감합니다.\"", dim: "E" },
+      { letter: "D", text: "\"방과후 강사님들도 각자의 전문성을 가지고 교육하시는 분들입니다. 주관적인 느낌만으로 해고를 논하는 것은 부당합니다.\"", dim: "A" }
+    ]
+  },
+  {
+    id: 19, topic: "관리자 개입",
+    situation: "학부모가 사전 연락 없이 들이닥쳐 교실에서 소리를 지르며 교장실로 가겠다고 난동을 부린다.",
+    choices: [
+      { letter: "A", text: "(당황하여, 조용히 교무실에 메시지를 보내 교감 선생님이나 다른 분이 올라와서 해결해 주기를 기다린다.)", dim: "V" },
+      { letter: "B", text: "\"학교 출입 수칙에 따라 사전 예약 없이 교실에 무단으로 들어오시는 것은 불법이며, 즉시 퇴거하지 않으시면 경찰에 신고하겠습니다.\"", dim: "P" },
+      { letter: "C", text: "\"아무리 화가 나셨더라도 교사인 저를 존중하지 않고 아이들 앞에서 소리를 지르시는 무례한 행동은 당장 멈춰주십시오.\"", dim: "A" },
+      { letter: "D", text: "\"지금 학생들 수업 중이니 복도로 나가시죠. 원하신다면 제가 교장실에 연락하여 지금 바로 면담 일정을 잡아드리겠습니다.\"", dim: "S" }
+    ]
+  },
+  {
+    id: 20, topic: "감정적 민원",
+    situation: "학급 반장 선거에서 떨어진 후, 교사가 아이의 자존감을 짓밟았다며 학부모가 전화를 걸어 대성통곡을 하며 원망한다.",
+    choices: [
+      { letter: "A", text: "\"어머님 우시는 목소리를 들으니 제 마음이 너무 아픕니다. 아이를 사랑하시는 마음이 느껴져 저도 가슴이 먹먹하네요.\"", dim: "E" },
+      { letter: "B", text: "\"선거 결과는 학생들이 민주적으로 투표한 결과입니다. 교사가 아이의 자존감을 무너뜨렸다는 식의 감정적인 비난은 수용하기 어렵습니다.\"", dim: "A" },
+      { letter: "C", text: "\"반장은 되지 못했지만, 아이의 리더십을 키워줄 수 있도록 학급 내에서 의미 있는 '1인 1역' 임무를 찾아 따로 부여하겠습니다.\"", dim: "S" },
+      { letter: "D", text: "\"어머님께서 지금 감정이 너무 격해지셔서 정상적인 대화가 힘든 것 같습니다. 나중에 진정되시면 그때 다시 연락받겠습니다.\"", dim: "V" }
+    ]
+  }
+];
+
+// TYPES
+const TYPES = {
+  "적극적 조정협력형": {
+    baseType: "조정협력형",
+    modifer: "적극적",
+    icon: "🤝",
+    color: "#2D7D7D",
+    summary: "원칙과 관계를 모두 중요하게 여기며, 갈등을 피하지 않고 직접 소통합니다.",
+    strengths: ["명확한 소통", "원칙과 공감의 균형", "적극적 문제 해결"],
+    growth: ["소진(Burnout) 주의", "모든 민원에 100% 에너지 투입 지양"],
+    detail: "민원인의 감정을 충분히 수용하면서도 교육적 원칙을 명확히 설명하는 능력이 뛰어납니다. 갈등 상황을 정면으로 마주하며 주도적으로 해결합니다.",
+    guides: ["공감 먼저, 원칙 다음 순서로 소통하세요.", "쿠션어(\"많이 놀라셨겠어요\")를 활용해 대화의 문을 여세요.", "대응 후 반드시 피드백을 드리겠다고 약속하고 지키세요.", "모든 민원에 동일한 에너지를 쏟기보다 우선순위를 정하세요."]
+  },
+  "신중한 조정협력형": {
+    baseType: "조정협력형",
+    modifer: "신중한",
+    icon: "🔍",
+    color: "#3A9E9E",
+    summary: "충분한 사실 확인 후 설득과 조정을 시도합니다.",
+    strengths: ["신중한 판단", "리스크 관리", "단계적 대응"],
+    growth: ["즉각 공감 표현 강화 필요", "결정 지연으로 오해받을 수 있음"],
+    detail: "원칙과 공감을 겸비하되, 충분한 상황 파악 후 대응하는 신중한 스타일입니다. 섣부른 약속이나 감정적 반응 없이 체계적으로 접근합니다.",
+    guides: ["사실 확인 전이라도 '감정 공감'은 즉시 표현하세요.", "확인 후 연락드리겠다는 약속을 구체적인 시간과 함께 제시하세요.", "체계적 대응 과정을 학부모에게 투명하게 공유하세요.", "결정이 늦어질 경우 중간 경과를 꼭 알려주세요."]
+  },
+  "관망형 조정협력형": {
+    baseType: "조정협력형",
+    modifer: "관망형",
+    icon: "⚖️",
+    color: "#7BAE8C",
+    summary: "원칙과 관계를 중시하지만, 즉각 대응보다 상황 파악을 우선합니다.",
+    strengths: ["신중한 개입", "갈등 완화 지향", "충분한 관찰"],
+    growth: ["대응 지연으로 신뢰 저하 가능", "좀 더 주도적인 소통 필요"],
+    detail: "상황을 충분히 살피며 적절한 타이밍을 기다리는 스타일입니다. 섣부른 개입보다는 에너지 소모를 줄이며 갈등을 우회합니다.",
+    guides: ["관망과 무대응은 다릅니다. 간단한 접수 확인 메시지라도 보내세요.", "언제까지 답변드리겠다는 약속으로 불안을 줄이세요.", "상황 파악이 끝나면 주도적으로 먼저 연락하세요.", "중립적 언어로 양쪽의 입장을 정리해 드리면 효과적입니다."]
+  },
+  "적극적 원칙수호형": {
+    baseType: "원칙수호형",
+    modifer: "적극적",
+    icon: "📐",
+    color: "#5B7FA6",
+    summary: "규정과 공정성을 중시하며 자신의 입장을 분명히 설명합니다.",
+    strengths: ["명확한 원칙 적용", "일관성", "교사 전문성 주장"],
+    growth: ["공감적 언어 부족으로 갈등 심화 가능", "쿠션어 활용 연습 필요"],
+    detail: "공정성을 최우선으로 하며 규정을 근거로 불필요한 요구를 거절합니다. 즉각적이고 단호한 대응이 특기이며, 원칙을 흔들림 없이 지킵니다.",
+    guides: ["원칙을 설명하기 전, 감정 공감 한 문장을 꼭 먼저 넣으세요.", "규정 내용보다 그 '이유'를 함께 설명하면 수용도가 높아집니다.", "단호하되 차갑지 않은 어조를 연습하세요.", "합리적인 대안(절충안)을 제시하면 갈등이 줄어듭니다."]
+  },
+  "신중한 원칙수호형": {
+    baseType: "원칙수호형",
+    modifer: "신중한",
+    icon: "📋",
+    color: "#6A8FC0",
+    summary: "충분한 근거를 확보한 후 원칙에 따라 대응합니다.",
+    strengths: ["철저한 근거 수집", "체계적 대응", "실수 최소화"],
+    growth: ["신속한 초기 공감 반응 필요", "결정 지연이 불신으로 이어질 수 있음"],
+    detail: "충분한 근거와 규정을 확보한 후 원칙에 따라 체계적으로 대응합니다. 섣부른 판단 없이 사실에 근거한 대응을 지향합니다.",
+    guides: ["사실 확인 전이라도 '접수 확인' 연락을 먼저 하세요.", "근거를 확보하면 명확하고 자신감 있게 전달하세요.", "설명 전 공감 언어로 감정 온도를 낮추세요.", "서면 안내나 규정 출처를 공유하면 설득력이 높아집니다."]
+  },
+  "관망형 원칙수호형": {
+    baseType: "원칙수호형",
+    modifer: "관망형",
+    icon: "🗂️",
+    color: "#8FA6C0",
+    summary: "원칙은 강하지만 즉각적인 대응보다는 신중한 판단을 선호합니다.",
+    strengths: ["신중한 판단", "원칙 기반 결정", "리스크 회피"],
+    growth: ["대응 지연으로 오해 소지", "더 적극적인 소통 채널 필요"],
+    detail: "원칙을 중시하지만 즉각적 개입보다 상황을 관찰하고 적절한 타이밍을 기다립니다. 리스크 관리 능력이 뛰어납니다.",
+    guides: ["관망 중에도 '확인 중'이라는 신호를 보내세요.", "결정 후에는 지체 없이 명확하게 입장을 전달하세요.", "공감 언어로 대화의 첫 문장을 시작하는 습관을 들이세요.", "필요시 관리자와 사전 협의 후 통일된 입장으로 대응하세요."]
+  },
+  "적극적 관계중심형": {
+    baseType: "관계중심형",
+    modifer: "적극적",
+    icon: "💬",
+    color: "#6B9E6B",
+    summary: "관계 형성과 공감을 중시하며 적극적으로 소통합니다.",
+    strengths: ["뛰어난 공감 능력", "신뢰 관계 형성", "적극적 소통"],
+    growth: ["단호한 거절이 어려울 수 있음", "원칙 적용 시 모호함 주의"],
+    detail: "학부모와의 신뢰 구축을 우선하며 부드러운 대화로 갈등을 풀어나갑니다. 공감과 관계 유지에 뛰어난 재능을 가지고 있습니다.",
+    guides: ["공감 후에는 반드시 명확한 입장이나 결론을 전달하세요.", "규정을 '함께 지켜야 할 약속'으로 부드럽게 설명하세요.", "과도한 수용이 선례가 될 수 있으니 경계를 명확히 하세요.", "\"이해하지만 이 부분은 어렵습니다\"라는 표현을 연습하세요."]
+  },
+  "신중한 관계중심형": {
+    baseType: "관계중심형",
+    modifer: "신중한",
+    icon: "🌱",
+    color: "#7BAE8C",
+    summary: "상대방의 입장을 충분히 이해한 뒤 대응합니다.",
+    strengths: ["깊은 경청", "신중한 공감", "관계 보전"],
+    growth: ["원칙 적용 시 주저함", "결정 속도 개선 필요"],
+    detail: "상대방의 감정과 입장을 충분히 경청한 후 대응하는 스타일입니다. 관계를 소중히 여기며 서두르지 않고 이해 후 행동합니다.",
+    guides: ["경청 후 요약('말씀하신 내용이 이런 건가요?')을 활용하세요.", "이해했다는 표현 후 교사 입장도 함께 설명하세요.", "결론을 미루지 말고, 공감 후 명확한 입장을 같은 대화에서 전달하세요.", "규정 설명 시 \"선생님도 처음엔 어색했는데\" 등 인간적 어조를 활용하세요."]
+  },
+  "관망형 관계중심형": {
+    baseType: "관계중심형",
+    modifer: "관망형",
+    icon: "🕊️",
+    color: "#A8C8A8",
+    summary: "관계를 중요하게 생각하지만 갈등 상황에서는 일단 상황을 지켜봅니다.",
+    strengths: ["갈등 회피로 관계 유지", "관찰력", "부드러운 분위기"],
+    growth: ["주도적 대응 필요", "모호한 태도가 신뢰 저해 가능"],
+    detail: "관계를 소중히 여기지만 갈등 상황에서는 먼저 나서기보다 상황을 살피는 경향이 있습니다. 에너지를 아끼며 자연스러운 해결을 선호합니다.",
+    guides: ["갈등을 외면하지 말고, 부드럽게 '먼저' 말을 거세요.", "\"우선 감사히 접수했습니다\" 한 줄이라도 먼저 연락하세요.", "공감과 함께 간단한 다음 행동 계획을 제시하세요.", "시간이 지난다고 해결되지 않는 민원에는 더 빠르게 개입하세요."]
+  },
+  "적극적 거리두기형": {
+    baseType: "거리두기형",
+    modifer: "적극적",
+    icon: "⚡",
+    color: "#A07060",
+    summary: "관계나 원칙보다 효율적인 문제 관리에 집중하며 직접 대응합니다.",
+    strengths: ["빠른 처리", "효율적 관리", "에너지 보존"],
+    growth: ["공감 표현 부족으로 오해 소지", "최소한의 관계 유지 필요"],
+    detail: "갈등을 최소화하며 복잡한 사안은 상급자나 규정으로 이관하여 에너지를 보존합니다. 즉각적이고 직접적인 대응을 선호합니다.",
+    guides: ["\"감사합니다\", \"수고 많으십니다\" 같은 짧은 공감 인사로 시작하세요.", "전달할 내용은 간결하되, 따뜻한 어조를 더하세요.", "이관 시 \"제가 직접 연결해 드릴게요\"라는 말로 책임감을 보여주세요.", "결과를 간략히라도 안내해 주면 신뢰가 높아집니다."]
+  },
+  "전략적 거리두기형": {
+    baseType: "거리두기형",
+    modifer: "전략적",
+    icon: "🧩",
+    color: "#B88060",
+    summary: "불필요한 갈등을 최소화하기 위해 일정한 거리를 유지합니다.",
+    strengths: ["전략적 판단", "갈등 에너지 최소화", "객관적 거리 유지"],
+    growth: ["냉담하게 보일 수 있음", "최소한의 공감 표현 필요"],
+    detail: "불필요한 갈등을 피하며 최소한의 개입으로 상황을 관리합니다. 에너지 소모를 전략적으로 줄이며 필요할 때만 개입합니다.",
+    guides: ["개입하지 않을 때도 '확인했다'는 신호는 보내세요.", "공감 언어 한 두 문장을 패턴화해 두면 대응이 쉬워집니다.", "단순 이관보다 '제가 연결해 드리겠습니다' 방식으로 바꿔보세요.", "선택적 개입의 기준을 명확히 하고 그 기준은 일관되게 유지하세요."]
+  },
+  "관망형 거리두기형": {
+    baseType: "거리두기형",
+    modifer: "관망형",
+    icon: "🌊",
+    color: "#C09878",
+    summary: "민원 상황에서 즉각 개입하기보다 관찰과 판단을 우선합니다.",
+    strengths: ["관찰 우선", "충동적 대응 없음", "신중한 판단"],
+    growth: ["무대응으로 오해받기 쉬움", "적극적 소통 채널 확보 필요"],
+    detail: "민원 상황에서 즉각 개입하기보다 관찰하고 판단하는 것을 선호합니다. 에너지 보존을 중요시하며 상황이 명확해질 때까지 기다립니다.",
+    guides: ["'관망'이 '무관심'으로 보이지 않도록 단순 접수 확인 연락은 꼭 하세요.", "작은 공감 표현(\"말씀 잘 들었습니다\")이 큰 불만을 막습니다.", "판단이 끝나면 명확하고 신속하게 결과를 알려주세요.", "에너지를 아끼는 것과 응대하지 않는 것은 다릅니다."]
+  }
+};
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let currentQ = 0;
+let answers = {}; // { qIndex: dimString }
+let radarChart = null;
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startTest() {
+  currentQ = 0;
+  answers = {};
+  showScreen('screen-question');
+  renderQuestion();
+}
+
+// ══════════════════════════════════════════════
+// QUESTION RENDER
+// ══════════════════════════════════════════════
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const pct = Math.round(((currentQ + 1) / QUESTIONS.length) * 100);
+
+  document.getElementById('prog-frac').textContent = `${currentQ + 1} / ${QUESTIONS.length}`;
+  document.getElementById('prog-fill').style.width = pct + '%';
+
+  const card = document.getElementById('q-card');
+  card.innerHTML = `
+    <div class="q-badge">
+      <span>Q${q.id}</span>
+      <span style="opacity:.5">|</span>
+      <span>${q.topic}</span>
+    </div>
+    <div class="q-situation">
+      <strong>📌 상황</strong>
+      ${q.situation}
+    </div>
+    <div class="q-choices">
+      ${q.choices.map((c, i) => `
+        <button class="choice-btn" onclick="selectAnswer(${i}, '${c.dim}')">
+          <span class="choice-letter">${c.letter}</span>
+          <span>${c.text}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  // Re-trigger animation
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'fadeUp 0.3s ease';
+}
+
+function selectAnswer(choiceIdx, dim) {
+  // Highlight briefly
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.classList.remove('selected'));
+  btns[choiceIdx].classList.add('selected');
+
+  answers[currentQ] = dim;
+
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ >= QUESTIONS.length) {
+      showScreen('screen-loading');
+      setTimeout(computeResult, 1800);
+    } else {
+      renderQuestion();
+    }
+  }, 300);
+}
+
+// ══════════════════════════════════════════════
+// SCORING
+// ══════════════════════════════════════════════
+function computeResult() {
+  const scores = { P: 0, E: 0, A: 0, S: 0, V: 0 };
+  Object.values(answers).forEach(dim => { scores[dim]++; });
+
+  const maxPossible = 16; // Each dim appears 16 times (perfectly balanced)
+  const pcts = {
+    P: Math.round((scores.P / maxPossible) * 100),
+    E: Math.round((scores.E / maxPossible) * 100),
+    A: Math.round((scores.A / maxPossible) * 100),
+    S: Math.round((scores.S / maxPossible) * 100),
+    V: Math.round((scores.V / maxPossible) * 100)
+  };
+
+  // Derived dimensions
+  const principleScore = scores.P + scores.A;
+  const cooperationScore = scores.E + scores.S;
+  const avoidanceScore = scores.V;
+
+  const principleAvg = principleScore / 2;  // max 16 each → avg, base 8
+  const cooperationAvg = cooperationScore / 2;
+  const principleHigh = principleAvg >= 4;
+  const cooperationHigh = cooperationAvg >= 4;
+  const avoidanceLow = avoidanceScore <= 2;
+  const avoidanceMid = avoidanceScore > 2 && avoidanceScore <= 5;
+
+  // Base type
+  let baseType;
+  if (principleHigh && cooperationHigh) baseType = "조정협력형";
+  else if (principleHigh && !cooperationHigh) baseType = "원칙수호형";
+  else if (!principleHigh && cooperationHigh) baseType = "관계중심형";
+  else baseType = "거리두기형";
+
+  // Modifier
+  let modifier;
+  if (avoidanceLow) modifier = "적극적";
+  else if (avoidanceMid) modifier = "신중한";
+  else modifier = (baseType === "거리두기형" ? "관망형" : "관망형");
+
+  // For "거리두기형" mid avoidance → "전략적"
+  if (baseType === "거리두기형" && avoidanceMid) modifier = "전략적";
+
+  let typeName = modifier + " " + baseType;
+
+  // Fallback if key not found
+  if (!TYPES[typeName]) {
+    // Find closest
+    typeName = Object.keys(TYPES).find(k => k.includes(baseType)) || Object.keys(TYPES)[0];
+  }
+
+  renderResult(typeName, scores, pcts);
+}
+
+// ══════════════════════════════════════════════
+// RESULT RENDER
+// ══════════════════════════════════════════════
+function renderResult(typeName, scores, pcts) {
+  const t = TYPES[typeName];
+
+  const dimLabels = { P: "원칙성", E: "공감성", A: "전문성 주장", S: "해결지향", V: "회피성" };
+  const dimColors = { P: "#5B7FA6", E: "#7BAE8C", A: "#3A9E9E", S: "#6B9E6B", V: "#B88060" };
+
+  const wrap = document.getElementById('result-wrap');
+  wrap.innerHTML = `
+    <div class="result-hero">
+      <div class="result-eyebrow">📊 나의 민원 응대 스타일</div>
+      <div class="result-type-name">${t.icon} ${typeName}</div>
+      <div class="result-summary">${t.summary}</div>
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">📈 응대 차원별 분석</div>
+      <div class="chart-wrap">
+        <canvas id="radarCanvas" width="280" height="280"></canvas>
+      </div>
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">📊 세부 점수</div>
+      <div class="score-bars">
+        ${Object.entries(dimLabels).map(([k, label]) => `
+          <div class="score-row">
+            <div class="score-dim">${label}</div>
+            <div class="score-track">
+              <div class="score-fill" id="fill-${k}" style="width: 0%; background: ${dimColors[k]}"></div>
+            </div>
+            <div class="score-pct">${pcts[k]}%</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">🌟 강점 & 성장 포인트</div>
+      <div class="tag-row">
+        ${t.strengths.map(s => `<span class="tag tag-strength">✅ ${s}</span>`).join('')}
+      </div>
+      <div class="tag-row">
+        ${t.growth.map(g => `<span class="tag tag-growth">💡 ${g}</span>`).join('')}
+      </div>
+      <p class="detail-text" style="margin-top: 12px;">${t.detail}</p>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-secondary" onclick="startTest()">🔄 다시 검사하기</button>
+      <button class="btn-primary" onclick="shareResult('${typeName}')">📤 결과 공유하기</button>
+    </div>
+  `;
+
+  showScreen('screen-result');
+
+  // Animate score bars
+  setTimeout(() => {
+    Object.keys(dimLabels).forEach(k => {
+      const el = document.getElementById('fill-' + k);
+      if (el) el.style.width = pcts[k] + '%';
+    });
+  }, 200);
+
+  // Radar chart
+  setTimeout(() => {
+    const ctx = document.getElementById('radarCanvas').getContext('2d');
+    if (radarChart) radarChart.destroy();
+    radarChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: ['원칙성', '공감성', '전문성 주장', '해결지향', '회피성'],
+        datasets: [{
+          data: [pcts.P, pcts.E, pcts.A, pcts.S, pcts.V],
+          backgroundColor: 'rgba(58, 158, 158, 0.18)',
+          borderColor: '#3A9E9E',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#2D7D7D',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 100,
+            ticks: { stepSize: 25, font: { size: 10 }, color: '#8A939E' },
+            grid: { color: '#E8ECEF' },
+            angleLines: { color: '#E8ECEF' },
+            pointLabels: { font: { size: 11, weight: '600' }, color: '#5A6473' }
+          }
+        },
+        animation: { duration: 800 }
+      }
+    });
+  }, 300);
+}
+
+function shareResult(typeName) {
+  if (navigator.share) {
+    navigator.share({
+      title: '학부모 민원 응대 스타일 진단 결과',
+      text: `나의 민원 응대 스타일은 "${typeName}"입니다. 선생님도 확인해 보세요!`,
+      url: window.location.href
+    });
+  } else {
+    navigator.clipboard.writeText(
+      `나의 학부모 민원 응대 스타일: "${typeName}" | 진단 링크: ${window.location.href}`
+    ).then(() => {
+      alert('결과 링크가 복사되었습니다! 동료 선생님들과 공유해 보세요.');
+    }).catch(() => {
+      alert(`나의 민원 응대 스타일: ${typeName}\n링크를 복사하여 공유해 보세요: ${window.location.href}`);
+    });
+  }
+}
+</script>
+</body>
+</html>
